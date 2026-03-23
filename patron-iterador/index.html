@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patrón Iterador | Patrones de Software</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="wrapper">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="badge">Patrones de Software</div>
+      <h1>Patrón Iterador</h1>
+      <p class="subtitle">
+        Permite recorrer los elementos de una colección de forma secuencial
+        sin exponer su representación interna.
+      </p>
+    </header>
+
+    <!-- Definición -->
+    <div class="definition-card">
+      <div class="def-icon">📖</div>
+      <div>
+        <h3>Definición — GoF</h3>
+        <p>
+          El <strong style="color:var(--accent-light)">Patrón Iterador</strong> es un patrón de comportamiento que
+          proporciona una forma de acceder secuencialmente a los elementos de un objeto agregado
+          sin revelar su representación subyacente. Separa la responsabilidad de la
+          iteración de la colección en sí misma.
+        </p>
+      </div>
+    </div>
+
+    <!-- Diagrama UML -->
+    <div class="diagram-section">
+      <div class="section-title">📐 Diagrama de Estructura</div>
+      <div class="diagram">
+
+        <!-- Colección (interfaz) -->
+        <div class="uml-box interface">
+          <div class="uml-header">
+            <span class="uml-stereotype">«interface»</span>
+            <span class="uml-name">Colección</span>
+          </div>
+          <div class="uml-body">
+            <span class="uml-method pub">+ crearIterador()</span>
+          </div>
+        </div>
+
+        <div class="arrow">
+          <span class="arrow-label">implementa</span>
+          <div class="arrow-line"></div>
+        </div>
+
+        <!-- Colección Concreta -->
+        <div class="uml-box concrete">
+          <div class="uml-header">
+            <span class="uml-stereotype">«class»</span>
+            <span class="uml-name">ColecciónConcreta</span>
+          </div>
+          <div class="uml-body">
+            <span class="uml-method prv">- elementos[ ]</span>
+            <span class="uml-method pub">+ crearIterador()</span>
+            <span class="uml-method pub">+ getElementos()</span>
+          </div>
+        </div>
+
+        <div class="arrow">
+          <span class="arrow-label">crea</span>
+          <div class="arrow-line"></div>
+        </div>
+
+        <!-- Iterador Concreto -->
+        <div class="uml-box highlight">
+          <div class="uml-header">
+            <span class="uml-stereotype">«class»</span>
+            <span class="uml-name">IteradorConcreto</span>
+          </div>
+          <div class="uml-body">
+            <span class="uml-method prv">- indice: number</span>
+            <span class="uml-method pub">+ hasNext()</span>
+            <span class="uml-method pub">+ next()</span>
+            <span class="uml-method pub">+ prev()</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Demo Interactiva -->
+    <div class="demo-section">
+      <div class="section-title">▶ Demo Interactiva</div>
+      <div class="demo-grid">
+
+        <!-- Personaje activo -->
+        <div class="character-panel">
+          <div class="avatar" id="avatar">🧑‍💻</div>
+          <div id="rol">iterador.current()</div>
+          <div id="nombre">—</div>
+          <div id="descripcion">—</div>
+          <div class="dots" id="dots"></div>
+        </div>
+
+        <!-- Lista de la colección -->
+        <div class="collection-panel">
+          <div class="panel-label">Colección [ ]</div>
+          <div id="collection-list"></div>
+        </div>
+
+      </div>
+
+      <!-- Controles -->
+      <div class="controls">
+        <button class="btn btn-secondary" id="btnAnterior" onclick="anterior()">
+          ← Anterior
+        </button>
+        <span class="counter" id="counter">0 / 0</span>
+        <button class="btn btn-primary" id="btnSiguiente" onclick="siguiente()">
+          Siguiente →
+        </button>
+      </div>
+    </div>
+
+    <!-- Código de ejemplo -->
+    <div class="code-section">
+      <div class="section-title">💻 Implementación JavaScript</div>
+      <div class="code-block">
+        <div class="code-topbar">
+          <div class="code-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-file">iterador.js</span>
+          <span></span>
+        </div>
+        <pre><code><span class="cm">// ── Colección ──────────────────────────────────</span>
+<span class="kw">const</span> <span class="prop">personajes</span> = [
+  { <span class="prop">nombre</span>: <span class="str">"Hacker"</span>,      <span class="prop">descripcion</span>: <span class="str">"Experto en ciberseguridad"</span>,  <span class="prop">emoji</span>: <span class="str">"🧑‍💻"</span> },
+  { <span class="prop">nombre</span>: <span class="str">"Analista"</span>,    <span class="prop">descripcion</span>: <span class="str">"Interpreta y modela datos"</span>,   <span class="prop">emoji</span>: <span class="str">"📊"</span> },
+  { <span class="prop">nombre</span>: <span class="str">"Programador"</span>, <span class="prop">descripcion</span>: <span class="str">"Crea soluciones de software"</span>, <span class="prop">emoji</span>: <span class="str">"⚙️"</span> }
+];
+
+<span class="cm">// ── Iterador ──────────────────────────────────</span>
+<span class="kw">function</span> <span class="fn">crearIterador</span>(coleccion) {
+  <span class="kw">let</span> <span class="prop">indice</span> = <span class="num">0</span>;
+  <span class="kw">return</span> {
+    <span class="fn">hasNext</span>: () => <span class="prop">indice</span> &lt; coleccion.length - <span class="num">1</span>,
+    <span class="fn">hasPrev</span>: () => <span class="prop">indice</span> > <span class="num">0</span>,
+    <span class="fn">next</span>:    () => coleccion[++<span class="prop">indice</span>],
+    <span class="fn">prev</span>:    () => coleccion[--<span class="prop">indice</span>],
+    <span class="fn">current</span>: () => coleccion[<span class="prop">indice</span>],
+    <span class="fn">index</span>:   () => <span class="prop">indice</span>,
+  };
+}
+
+<span class="kw">const</span> <span class="prop">iterador</span> = <span class="fn">crearIterador</span>(personajes);</code></pre>
+      </div>
+    </div>
+
+    <footer class="footer">
+      Patrón Iterador · Patrones de Software · <span style="color:var(--accent-light)">Comportamental</span>
+    </footer>
+
+  </div>
+
+  <script src="iterador.js"></script>
+</body>
+
+</html>
